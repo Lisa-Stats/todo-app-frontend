@@ -11,3 +11,8 @@
  ::user-info
  (fn [db _]
    (:user-info db)))
+
+(reg-sub
+ ::button-info
+ (fn [db _]
+   (:button-info db)))

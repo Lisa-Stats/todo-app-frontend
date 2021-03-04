@@ -1,6 +1,6 @@
 (ns todo.events
   (:require
-   [re-frame.core :refer [reg-event-fx]]
+   [re-frame.core :refer [reg-event-db reg-event-fx]]
    [todo.db :refer [app-db]]))
 
 (reg-event-fx
@@ -15,3 +15,13 @@
      (case page
        :home {:db set-page}
        :todos {:db set-page}))))
+
+(reg-event-fx
+ :increment-button-two
+ (fn [{:keys [db]} _]
+   (update-in db [:button-info] inc)))
+
+(reg-event-db
+ :increment-button
+ (fn [db _]
+   (update-in db [:button-info] inc)))
