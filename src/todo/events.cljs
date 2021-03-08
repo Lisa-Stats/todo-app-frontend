@@ -19,7 +19,7 @@
 (reg-event-fx
  :increment-button-two
  (fn [{:keys [db]} _]
-   (update-in db [:button-info] inc)))
+   {:db (update-in db [:button-info] inc)}))
 
 (reg-event-db
  :increment-button
