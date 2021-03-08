@@ -5,20 +5,12 @@
    [todo.router :refer [url-for]]
    [todo.subs :as subs]))
 
-#_(defn counting-button [txt]
-  (let [state (reagent/atom 0)] ;; button counter with local state
-    (fn [txt]
-      [:button.green
-        {:on-click #(swap! state inc)}
-        (str txt " " @state)])))
-
 (defn home-page
   []
   (let [button-count (subscribe [::subs/button-info])] ;; button counter with global state
     (fn []
       [:div
        [:h2 "Button Counter"]
-       #_[counting-button "click me"]
        [:button
         {:on-click (fn [e]
                      (.preventDefault e)
@@ -29,10 +21,44 @@
          {:href (url-for :todos)}
          "Click me"]]])))
 
+#_(defn registration-form [username]
+  (let [local-username (reagent/atom {:username username})]
+    (fn [username]
+      [:div
+       [:input {:type :text :name :local-username
+                :value (:username @local-username)
+                :on-change #(do (swap! local-username assoc :username (.. % -target -value))
+                                (js/console.log %))}]
+       [:input {:type :button
+                :value "create username"
+                :on-click #(dispatch [:new-username @local-username (-> % .-target .-value)])}]
+       [:div
+        [:h "local atom value: " @local-username]]])))
+
+(defn exercise
+  [num-default color-default]
+  (let [info (reagent/atom {})]
+    (fn [_ _]
+      [:<>
+       [:span
+        {:class "bg-gray-200 mx-2 px-2 py-2"}
+        [:input {:type :number
+                 :value (:number @info)
+                 :on-change #(swap! info assoc :number (.. % -target -value))}]]
+       [:span
+        {:class "bg-blue-200 mx-2 px-2 py-2"}
+        [:input {:type :text
+                 :value (:color @info)
+                 :on-change #(swap! info assoc :color (.. % -target -value))}]]
+       [:h2
+        {:style {:color (get @info :color color-default)}}
+        (get @info :number num-default)]])))
+
 (defn todos-page
   []
   [:div
    [:h2 "Hello todos"]
+   [exercise]
    [:a
     {:href (url-for :home)}
     "Click me to go home"]])
