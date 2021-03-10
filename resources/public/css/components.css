@@ -1,0 +1,25 @@
+.sign-in-container {
+    @apply min-h-screen justify-center
+    py-12 px-4 sm:px-6 lg:px-8 bg-cgray-500;
+}
+
+.sign-in-card {
+    @apply max-w-lg rounded-md shadow-md w-full
+    bg-cgray-300 py-12 px-12 space-y-10 text-blue-900;
+}
+
+.todos-title {
+    @apply text-4xl text-center font-medium leading-3 text-gray-900;
+}
+
+.sign-in-account-title {
+    @apply mt-6 text-center text-3xl font-extrabold text-gray-900;
+}
+
+.flex {
+    @apply flex;
+}
+
+.items-center {
+    @apply items-center;
+}
