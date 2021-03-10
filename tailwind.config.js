@@ -5,7 +5,10 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
       colors: {
-        gray: colors.blueGray
+        bgray: colors.blueGray,
+        cgray: colors.coolGray,
+        gray: colors.gray,
+        blue: colors.blue
       }
      },
 variants: {},
