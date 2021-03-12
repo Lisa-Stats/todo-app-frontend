@@ -16,3 +16,8 @@
  ::button-info
  (fn [db _]
    (:button-info db)))
+
+(reg-sub
+ :current-todos
+ (fn [db _]
+   (:todos db)))
