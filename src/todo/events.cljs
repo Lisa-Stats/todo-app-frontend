@@ -25,3 +25,9 @@
  :increment-button
  (fn [db _]
    (update-in db [:button-info] inc)))
+
+(reg-event-db
+ :change-first-todo
+ (fn [db _]
+   (update-in db [:todos 0] (fn [todo-first]
+                              (assoc todo-first :name "grocery")))))
