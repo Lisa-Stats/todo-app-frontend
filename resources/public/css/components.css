@@ -19,9 +19,5 @@
 }
 
 .tabletitle {
-    @apply table-cell bg-blue-100 border text-left px-8 py-4;
-}
-
-.table {
-    @apply table-cell border px-2 py-4;
+    @apply bg-blue-100 border text-left px-8 py-4;
 }

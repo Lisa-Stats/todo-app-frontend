@@ -31,3 +31,19 @@
  (fn [db _]
    (update-in db [:todos 0] (fn [todo-first]
                               (assoc todo-first :name "grocery")))))
+
+(reg-event-fx
+ :toggle
+ (fn [{:keys [db]} [_ {:keys [id]}]]
+   {:db (update-in db [id :done] not)}))
+
+(reg-event-fx
+ :save-name
+ (fn [{:keys [db]} [_ {:keys [id name]}]]
+   {:db (update-in db [id :name] name)}))
+
+(reg-event-fx
+ :delete
+ (fn [{:keys [db]} [_ {:keys [id]}]]
+   {:db (update-in db [:todos 2] (fn [id]
+                                (dissoc db :todos :id id)))}))
