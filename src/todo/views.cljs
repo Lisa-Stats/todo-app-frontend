@@ -38,63 +38,53 @@
   []
   [sign-in])
 
-#_(comment
-  [:div.todos-container
- {:class "ml-15"}
- ([:div.todo
-   {:class "my-4"}
-   (if @name-input-mode?
-     [:div.todo-name-input
-      [:input
-       {:class "my-1"
-        :placeholder "Change todo name"}]
-      [:button
-       {:class "ml-3 text-sm"
-        :on-double-click #(reset! name-input-mode? (not @name-input-mode?))}
-       "Confirm"]]
-     [:div.todo-name
-      {:class "text-xl my-1"}
-      [:span name]
-      [:button
-       {:class "ml-3 text-sm"
-        :on-click (fn [e]
-                    (.preventDefault e)
-                    (reset! name-input-mode? (not @name-input-mode?)))}
-       "Pencil"]])
-   [:div.todo-body
-    body]])])
+(defn todo-list []
+  (let [todos (subscribe [:current-todos])
+        todo-input (r/atom "")]
+    (fn []
+      [:div {:class "table-row-group"}
+       (for [{:keys [id name body] :as _todo} @todos]
+         ^{:key id}
+         [:div  {:class "table-row"}
+          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
+          [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} name]
+          [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} body]
+          #_[:div {:class "table-cell"}
+           [:input
+            {:type :text
+             :placeholder "insert new task"
+             :value @todo-input
+             :on-change #(reset! todo-input (.. % -target -value))
+             :on-blur #(do (swap! todos assoc @todo-input)
+                           (reset! todo-input ""))}]]])])))
 
-(defn app []
-  (let [todos (subscribe [:current-todos])]
-    (apply concat (for [todo @todos
-                        :let [id (:id todo)
-                              name (:name todo)
-                              body (:body todo)
-                              done (:done todo)]]
-                    ^{:key id}
-                    [[:thead
-                      [:tr
-                       [:th [:div.tabletitle {:class "w-40"} "Completed"]]
-                       [:th [:div.tabletitle {:class "w-60"} "Todo Name"]]
-                       [:th [:div.tabletitle {:class "w-96"}"Todo"]]]]
-                     [:tbody
-                      [:tr
-                       [:div {:class "table-cell px-16 py-4"}
-                        [:input {:type :checkbox :checked done
-                                 :on-change #(dispatch [:toggle id])}]]
-                       [:div {:class "text-md px-1"}[:td name]]
-                       [:div {:class "text-md px-1"}][:td body]
-                       [:div {:class "bg-blue-100 hover:bg-blue-200"} [:button {:on-click #(dispatch [:delete id])} "Delete"]]]]]))))
+(defn todos-page
+  []
+  (fn []
+    [:<>
+     [:div.sidebar
+      [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
+      [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Home"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Family"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Friends"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Lists"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Errands"]]
+       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Other"]]]]
+     [:div.main
+      [:div [:h1.mtitle
+             "Here are your todos"]]
+      [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-3/4 table table-fixed"}
+       [:div {:class "table-row"}
+        [:div.tabletitle {:class "table-cell w-40 text-center rounded-tl-md"} "Completed"]
+        [:div.tabletitle {:class "table-cell w-60 text-center"} "Todo Name"]
+        [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
+       [todo-list]]]]))
 
-(defn todo-item []
+#_(defn todo-item []
   (let [edit? (r/atom false)]
-    (fn [{:keys [id name body done]}]
-      [:div
-       [:input {:type :checkbox :checked done
-                :on-change #(dispatch [:toggle id])}]
-       [:label {:on-double-click #(reset! edit? true)} name]
-       [:label {:on-double-click #(reset! edit? true)} body]
-       [:button {:on-click #(dispatch [id :delete])}]]
+    (fn []
       (if @edit?
         [:input {:type :text
                  :value (:name @edit?)
@@ -102,28 +92,6 @@
                  :on-save #(do (dispatch [:save-name])
                                (reset! edit? false))}]
         (:name edit?)))))
-
-(defn todos-page
-  []
-  (let [todos (subscribe [:current-todos])]
-    (fn []
-      [:<>
-       [:div.sidebar
-        [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
-        [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Home"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Family"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Friends"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Lists"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Errands"]]
-         [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Other"]]]]
-       [:div.main
-        [:div [:h1.mtitle
-               "Here are your todos"]]
-        [:div {:class "shadow-md overflow-y-auto mx-6 table table-fixed w-3/4"}
-         [:div {:class "mx-8 border shadow-sm"}
-          (app)]]]])))
 
 (defn pages
   [page-name]
