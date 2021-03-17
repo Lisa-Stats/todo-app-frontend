@@ -19,5 +19,5 @@
 }
 
 .tabletitle {
-    @apply bg-blue-100 border text-left px-8 py-4;
+    @apply bg-blue-100 text-left px-8 py-4;
 }
