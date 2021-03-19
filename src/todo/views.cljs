@@ -2,8 +2,7 @@
   (:require
    [reagent.core :as r]
    [re-frame.core :refer [dispatch subscribe]]
-   [todo.router :refer [url-for]]
-   [todo.subs :as subs]))
+   [todo.router :refer [url-for]]))
 
 (defn sign-in []
   [:div {:class "min-h-screen justify-center py-12 px-4 sm:px-6 lg:px-8 bg-cgray-400 flex items-center"}
@@ -39,8 +38,7 @@
   [sign-in])
 
 (defn todo-list []
-  (let [todos (subscribe [:current-todos])
-        todo-input (r/atom "")]
+  (let [todos (subscribe [:current-todos])]
     (fn []
       [:div {:class "table-row-group"}
        (for [{:keys [id name body] :as _todo} @todos]
@@ -58,12 +56,21 @@
              :on-blur #(do (swap! todos assoc @todo-input)
                            (reset! todo-input ""))}]]])])))
 
+(defn user-list []
+  (let [users (subscribe [:current-users])]
+    (fn []
+      [:div
+       [:h2 "Button for users: "
+        [:button {:on-click #(dispatch [:get-users])}
+         "new users"]
+        [:p "Users of todo app " (get-in @users [0])]]])))
+
 (defn todos-page
   []
   (fn []
     [:<>
      [:div.sidebar
-      [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
+      [:h2 {:clsas "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
       [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Home"]]
@@ -80,7 +87,9 @@
         [:div.tabletitle {:class "table-cell w-40 text-center rounded-tl-md"} "Completed"]
         [:div.tabletitle {:class "table-cell w-60 text-center"} "Todo Name"]
         [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
-       [todo-list]]]]))
+       [todo-list]]]
+     [:div {:class "ml-52 pl-8 pt-8"}
+      [user-list]]]))
 
 #_(defn todo-item []
   (let [edit? (r/atom false)]
