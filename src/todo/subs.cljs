@@ -8,9 +8,9 @@
    (:active-page db)))
 
 (reg-sub
- ::user-info
+ :current-users
  (fn [db _]
-   (:user-info db)))
+   (:users db)))
 
 (reg-sub
  ::button-info
