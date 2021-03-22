@@ -34,12 +34,6 @@
    (update-in db [:todos 0] (fn [todo-first]
                               (assoc todo-first :name "grocery")))))
 
-(reg-event-fx
- :delete
- (fn [{:keys [db]} [_ {:keys [_id]}]]
-   {:db (update-in db [:todos 2] (fn [id]
-                                   (dissoc db :todos :id id)))}))
-
 (defn- get-users
   [url]
   {:method          :get
@@ -60,7 +54,32 @@
  (fn [db [_ response]]
    (assoc-in db [:users] response)))
 
+(defn- get-todos
+  [url]
+  {:method          :get
+   :uri             url
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      [:save-todos]
+   :on-failure      [:api-error]})
+
+(reg-event-fx
+ :get-todos
+ (fn [{:keys [_db]} _]
+   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a"]
+     {:http-xhrio (get-todos url)})))
+
+(reg-event-db
+ :save-todos
+ (fn [db [_ response]]
+   (assoc-in db [:todos] response)))
+
 (reg-event-db
  :api-error
  (fn [db [_ response]]
-   (assoc-in db [:error :users] response)))
+   (assoc-in db [:error :todos] response)))
+
+(reg-event-fx
+ :delete
+ (fn [{:keys [db]} [_ {:keys [id]}]]
+   (update-in db [:todos :todo/todo_id] dissoc [:todo/todo_id id])))
