@@ -41,36 +41,33 @@
   (let [todos (subscribe [:current-todos])]
     (fn []
       [:div {:class "table-row-group"}
-       (for [{:keys [id name body] :as _todo} @todos]
+       (for [todo @todos
+             :let [id   (:todo/todo_id todo)
+                   name (:todo/todo_name todo)
+                   body (:todo/todo_body todo)]]
          ^{:key id}
          [:div  {:class "table-row"}
           [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
           [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} name]
           [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} body]
-          #_[:div {:class "table-cell"}
-           [:input
-            {:type :text
-             :placeholder "insert new task"
-             :value @todo-input
-             :on-change #(reset! todo-input (.. % -target -value))
-             :on-blur #(do (swap! todos assoc @todo-input)
-                           (reset! todo-input ""))}]]])])))
+          [:div
+           [:button {:class "hover:bg-blue-50 table-cell"
+                     :on-click #(dispatch [:delete id])} "x"]]])])))
 
-(defn user-list []
-  (let [users (subscribe [:current-users])]
-    (fn []
-      [:div
-       [:h2 "Button for users: "
-        [:button {:on-click #(dispatch [:get-users])}
-         "new users"]
-        [:p "Users of todo app " (get-in @users [0])]]])))
+(defn todos []
+  (fn []
+    [:div
+     [:h2 "'Sign in' button: "
+      [:button {:class "px-1 py-1 bg-blue-100"
+                :on-click #(dispatch [:get-todos])}
+       "Get todos"]]]))
 
 (defn todos-page
   []
   (fn []
     [:<>
      [:div.sidebar
-      [:h2 {:clsas "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
+      [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
       [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Home"]]
@@ -82,14 +79,14 @@
      [:div.main
       [:div [:h1.mtitle
              "Here are your todos"]]
-      [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-3/4 table table-fixed"}
+      [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed"}
        [:div {:class "table-row"}
         [:div.tabletitle {:class "table-cell w-40 text-center rounded-tl-md"} "Completed"]
         [:div.tabletitle {:class "table-cell w-60 text-center"} "Todo Name"]
         [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
        [todo-list]]]
      [:div {:class "ml-52 pl-8 pt-8"}
-      [user-list]]]))
+      [todos]]]))
 
 #_(defn todo-item []
   (let [edit? (r/atom false)]
