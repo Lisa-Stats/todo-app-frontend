@@ -41,18 +41,17 @@
   (let [todos (subscribe [:current-todos])]
     (fn []
       [:div {:class "table-row-group"}
-       (for [todo @todos
-             :let [id   (:todo/todo_id todo)
-                   name (:todo/todo_name todo)
-                   body (:todo/todo_body todo)]]
+       (for [[id todo-info] @todos
+             :let [name (:todo/todo_name todo-info)
+                   body (:todo/todo_body todo-info)]]
          ^{:key id}
          [:div  {:class "table-row"}
-          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
+          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]
+           [:div
+           [:button {:class "bg-blue-50 px-1 hover:bg-blue-100 table-cell"
+                     :on-click #(dispatch [:delete id])} "x"]]]
           [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} name]
-          [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} body]
-          [:div
-           [:button {:class "hover:bg-blue-50 table-cell"
-                     :on-click #(dispatch [:delete id])} "x"]]])])))
+          [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} body]])])))
 
 (defn todos []
   (fn []
