@@ -48,6 +48,16 @@
 
 (def todo-interceptors (path :todos))
 
+(defn add-next-id [todos]
+  ((fnil inc 0) (last (keys todos))))
+
+(reg-event-db
+ :add-todo
+ todo-interceptors
+ (fn [todos [_ name body]]
+   (let [id (add-next-id todos)]
+     (assoc todos id {:todo/todo_id id :todo/todo_name name :todo/todo_body body}))))
+
 (reg-event-db
  :delete
  todo-interceptors
