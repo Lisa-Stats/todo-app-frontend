@@ -36,23 +36,58 @@
   []
   [sign-in])
 
+(defn input-component
+  [_todo-info _todo-param _edit-param _editing?]
+  (fn [todo-info todo-param-key edit-param editing?]
+    (let [todo-param (todo-param-key todo-info)
+          id (:todo/todo_id todo-info)]
+      (if @editing?
+        [:input {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100 bg-blue-50"
+                 :type :text
+                 :placeholder todo-param
+                 :value @edit-param
+                 :on-change #(reset! edit-param (.. % -target -value))
+                 :on-key-up
+                 (fn [e]
+                   (when (= "Enter" (.-key e))
+                     (.preventDefault e)
+                     (dispatch [:update-todo-param todo-param-key id])
+                     (reset! edit-param "")
+                     (reset! editing? (not @editing?))))}]
+        [:div
+         {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"
+          :on-click (fn [e]
+                      (.preventDefault e)
+                      (reset! editing? (not @editing?)))}
+         todo-param]))))
+
+(defn todo-items
+  [_todo-info]
+  (let [name-editing? (r/atom false)
+        body-editing? (r/atom false)
+        edited-name   (r/atom "")
+        edited-body   (r/atom "")]
+    (fn [todo-info]
+      (let [id (:todo/todo_id todo-info)]
+        [:<>
+         [:div  {:class "table-row"}
+          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
+          [input-component todo-info :todo/todo_name edited-name name-editing?]
+          [input-component todo-info :todo/todo_body edited-body body-editing?]
+          [:div
+           [:button {:class "bg-blue-50 px-1 hover:bg-blue-100 table-cell"
+                     :on-click #(dispatch [:delete id])} "x"]]]]))))
+
+
+
 (defn todo-list []
   (let [todos (subscribe [:current-todos])]
     (fn []
       [:div {:class "table-row-group"}
-       (doall (for [[id todo-info] @todos
-                   :let [name (:todo/todo_name todo-info)
-                         body (:todo/todo_body todo-info)]]
-               ^{:key id}
-               [:<>
-                [:div  {:class "table-row"}
-                 [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
-                 [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} name]
-                 [:div {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100"} body]
-                 [:div
-                  [:button {:class "bg-blue-50 px-1 hover:bg-blue-100 table-cell"} "x"]]]]))])))
+       (doall (for [[id todo-info] @todos]
+               ^{:key id} [todo-items todo-info]))])))
 
-(defn todos []
+(defn todo-fns []
   (let [add-name (r/atom "")
         add-todo (r/atom "")]
     (fn []
@@ -63,7 +98,7 @@
                    :on-click #(dispatch [:get-todos])}
           "Get todos"]]]
        [:div
-        [:h3 "Add todo name " @add-name]
+        [:h3 "Add todo name"]
         [:input {:class "border-4 border-blue-100"
                  :type :text
                  :value @add-name
@@ -75,7 +110,7 @@
                      (reset! add-name "")
                      (reset! add-todo "")
                      (.preventDefault e)))}]
-        [:h3 "Add todo " @add-todo]
+        [:h3 "Add todo"]
         [:input {:class "border-4 border-blue-100"
                  :type :text
                  :value @add-todo
@@ -113,7 +148,7 @@
         [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
        [todo-list]]]
      [:div {:class "ml-52 pl-8 pt-8"}
-      [todos]]]))
+      [todo-fns]]]))
 
 (defn pages
   [page-name]
