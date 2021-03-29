@@ -36,22 +36,24 @@
   []
   [sign-in])
 
-(defn input-component
+(defn update-component
   [_todo-info _todo-param _edit-param _editing?]
   (fn [todo-info todo-param-key edit-param editing?]
     (let [todo-param (todo-param-key todo-info)
           id (:todo/todo_id todo-info)]
       (if @editing?
-        [:input {:class "table-cell px-2 py-2 border-r-2 border-b-2 border-blue-100 bg-blue-50"
+        [:input {:class "table-cell py-2 border-r-2 border-b-2 border-blue-100 bg-blue-50 w-full"
                  :type :text
+                 :auto-focus true
                  :placeholder todo-param
                  :value @edit-param
                  :on-change #(reset! edit-param (.. % -target -value))
+                 :on-blur #(reset! editing? (not @editing?))
                  :on-key-up
                  (fn [e]
                    (when (= "Enter" (.-key e))
                      (.preventDefault e)
-                     (dispatch [:update-todo-param todo-param-key id])
+                     (dispatch [:update-todo-param id todo-param-key @edit-param])
                      (reset! edit-param "")
                      (reset! editing? (not @editing?))))}]
         [:div
@@ -71,12 +73,11 @@
       (let [id (:todo/todo_id todo-info)]
         [:<>
          [:div  {:class "table-row"}
-          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell px-20"} [:input {:type :checkbox}]]
-          [input-component todo-info :todo/todo_name edited-name name-editing?]
-          [input-component todo-info :todo/todo_body edited-body body-editing?]
-          [:div
-           [:button {:class "bg-blue-50 px-1 hover:bg-blue-100 table-cell"
-                     :on-click #(dispatch [:delete id])} "x"]]]]))))
+          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell pl-14"} [:input {:type :checkbox}]
+           [:button {:class "bg-blue-50 ml-8 px-1 hover:bg-blue-100 table-cell"
+                     :on-click #(dispatch [:delete id])} "x"]]
+          [update-component todo-info :todo/todo_name edited-name name-editing?]
+          [update-component todo-info :todo/todo_body edited-body body-editing?]]]))))
 
 
 
@@ -141,12 +142,14 @@
      [:div.main
       [:div [:h1.mtitle
              "Here are your todos"]]
-      [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed"}
+      [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed w-fixed"}
        [:div {:class "table-row"}
-        [:div.tabletitle {:class "table-cell w-40 text-center rounded-tl-md"} "Completed"]
-        [:div.tabletitle {:class "table-cell w-60 text-center"} "Todo Name"]
+        [:div.tabletitle {:class "table-cell w-40 text-left rounded-tl-md"} "Completed"]
+        [:div.tabletitle {:class "table-cell w-64 text-center"} "Todo Name"]
         [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
-       [todo-list]]]
+       [todo-list]]
+      [:footer {:class "text-xs ml-72"}
+       [:p "Click to update todo | | | Click X to delete todo"]]]
      [:div {:class "ml-52 pl-8 pt-8"}
       [todo-fns]]]))
 
