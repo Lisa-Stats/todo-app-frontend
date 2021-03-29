@@ -63,3 +63,9 @@
  todo-interceptors
  (fn [todos [_ id]]
    (dissoc todos id)))
+
+(reg-event-db
+ :update-todo-param
+ todo-interceptors
+ (fn [todos [_ id todo-param-key edit-param]]
+   (assoc-in todos [id todo-param-key] edit-param)))
