@@ -1,5 +1,5 @@
 .sidebar {
-    @apply h-full w-52 fixed inset-y-0 left-0 bg-cgray-600;
+    @apply h-full w-52 fixed inset-y-0 left-0;
 }
 
 .sbcat {
@@ -19,5 +19,5 @@
 }
 
 .tabletitle {
-    @apply bg-blue-100 text-left px-8 py-4;
+    @apply text-left px-8 py-4;
 }
