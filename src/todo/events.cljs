@@ -48,24 +48,68 @@
 
 (def todo-interceptors (path :todos))
 
-(defn add-next-id [todos]
-  ((fnil inc 0) (last (keys todos))))
+(defn- add-todo
+  [url name body]
+  {:method          :post
+   :uri             url
+   :params          {:todo-name name :todo-body body}
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      [:add-todo-to-app-db]
+   :on-failure      [:api-error]})
 
-(reg-event-db
+(reg-event-fx
  :add-todo
- todo-interceptors
- (fn [todos [_ name body]]
-   (let [id (add-next-id todos)]
-     (assoc todos id {:todo/todo_id id :todo/todo_name name :todo/todo_body body}))))
+ (fn [{:keys [_db]} [_ name body]]
+   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a"]
+     {:http-xhrio (add-todo url name body)})))
 
 (reg-event-db
- :delete
+ :add-todo-to-app-db
  todo-interceptors
- (fn [todos [_ id]]
-   (dissoc todos id)))
+ (fn [todos [_ response]]
+   (let [id (:todo/todo_id response)]
+     (assoc todos id response))))
+
+(defn- delete-todo
+  [url todo-id]
+  {:method          :delete
+   :uri             (str url todo-id)
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      [:delete-todo-from-app-db todo-id]
+   :on-failure      [:api-error]})
+
+(reg-event-fx
+ :delete-todo
+ (fn [{:keys [_db]} [_ todo-id]]
+   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a/"]
+     {:http-xhrio (delete-todo url todo-id)})))
 
 (reg-event-db
- :update-todo-param
+ :delete-todo-from-app-db
  todo-interceptors
- (fn [todos [_ id todo-param-key edit-param]]
-   (assoc-in todos [id todo-param-key] edit-param)))
+ (fn [todos [_ todo-id _response]]
+   (dissoc todos todo-id)))
+
+(defn- update-todo
+  [url todo-id todo-param-key edit-param]
+  {:method          :put
+   :uri             (str url todo-id)
+   :params          {todo-param-key edit-param}
+   :format          (ajax/json-request-format)
+   :response-format (ajax/json-response-format {:keywords? true})
+   :on-success      [:update-todo-to-app-db todo-id todo-param-key edit-param]
+   :on-failure      [:api-error]})
+
+(reg-event-fx
+ :update-todo
+ (fn [{:keys [_db]} [_ todo-id todo-param-key edit-param]]
+   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a/"]
+     {:http-xhrio (update-todo url todo-id todo-param-key edit-param)})))
+
+(reg-event-db
+ :update-todo-to-app-db
+ todo-interceptors
+ (fn [todos [_ todo-id todo-param-key edit-param ]]
+   (assoc-in todos [todo-id todo-param-key] edit-param)))
