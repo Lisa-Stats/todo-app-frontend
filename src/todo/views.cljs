@@ -53,7 +53,7 @@
                  (fn [e]
                    (when (= "Enter" (.-key e))
                      (.preventDefault e)
-                     (dispatch [:update-todo-param id todo-param-key @edit-param])
+                     (dispatch [:update-todo id todo-param-key @edit-param])
                      (reset! edit-param "")
                      (reset! editing? (not @editing?))))}]
         [:div
@@ -75,7 +75,7 @@
          [:div  {:class "table-row"}
           [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell pl-14"} [:input {:type :checkbox}]
            [:button {:class "bg-blue-50 ml-8 px-1 hover:bg-blue-100 table-cell"
-                     :on-click #(dispatch [:delete id])} "x"]]
+                     :on-click #(dispatch [:delete-todo id])} "x"]]
           [update-component todo-info :todo/todo_name edited-name name-editing?]
           [update-component todo-info :todo/todo_body edited-body body-editing?]]]))))
 
@@ -129,7 +129,7 @@
   []
   (fn []
     [:<>
-     [:div.sidebar
+     [:div.sidebar {:class "bg-gradient-to-b from-blue-500 to-blue-300"}
       [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
       [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
@@ -144,9 +144,9 @@
              "Here are your todos"]]
       [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed w-fixed"}
        [:div {:class "table-row"}
-        [:div.tabletitle {:class "table-cell w-40 text-left rounded-tl-md"} "Completed"]
-        [:div.tabletitle {:class "table-cell w-64 text-center"} "Todo Name"]
-        [:div.tabletitle {:class "table-cell w-96 text-center rounded-tr-md"} "Todo"]]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-40 text-left rounded-tl-md"} "Completed"]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-64 text-center"} "Todo Name"]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-96 text-center rounded-tr-md"} "Todo"]]
        [todo-list]]
       [:footer {:class "text-xs ml-72"}
        [:p "Click to update todo | | | Click X to delete todo"]]]
