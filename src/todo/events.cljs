@@ -2,13 +2,22 @@
   (:require
    [ajax.core :as ajax]
    [day8.re-frame.http-fx]
-   [re-frame.core :refer [path reg-event-db reg-event-fx]]
-   [todo.db :refer [app-db]]))
+   [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx]]
+   [todo.db :refer [app-db todos->local-store]]))
+
+
+(def ->local-store (after todos->local-store))
+
+(def path-interceptor (path :todos))
+
+(def todo-interceptors [(path :todos)
+                        ->local-store])
 
 (reg-event-fx
  :initialize-db
- (fn [_ _]
-   {:db app-db}))
+ [(inject-cofx :local-store-todos)]
+ (fn [{:keys [_db local-store-todos]} _]
+   {:db (assoc app-db :todos local-store-todos)}))
 
 (reg-event-fx
  :set-active-page
@@ -30,7 +39,7 @@
 (reg-event-fx
  :get-todos
  (fn [{:keys [_db]} _]
-   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a"]
+   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8"]
      {:http-xhrio (get-todos url)})))
 
 (defn map-todo-id [todo]
@@ -46,8 +55,6 @@
  (fn [db [_ response]]
    (assoc-in db [:error :todos] response)))
 
-(def todo-interceptors (path :todos))
-
 (defn- add-todo
   [url name body]
   {:method          :post
@@ -61,7 +68,7 @@
 (reg-event-fx
  :add-todo
  (fn [{:keys [_db]} [_ name body]]
-   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a"]
+   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8"]
      {:http-xhrio (add-todo url name body)})))
 
 (reg-event-db
@@ -83,7 +90,7 @@
 (reg-event-fx
  :delete-todo
  (fn [{:keys [_db]} [_ todo-id]]
-   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a/"]
+   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8/"]
      {:http-xhrio (delete-todo url todo-id)})))
 
 (reg-event-db
@@ -105,11 +112,11 @@
 (reg-event-fx
  :update-todo
  (fn [{:keys [_db]} [_ todo-id todo-param-key edit-param]]
-   (let [url "http://localhost:8890/todo/ce485732-a12a-4587-96da-ab91ebbbc07a/"]
+   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8/"]
      {:http-xhrio (update-todo url todo-id todo-param-key edit-param)})))
 
 (reg-event-db
  :update-todo-to-app-db
  todo-interceptors
- (fn [todos [_ todo-id todo-param-key edit-param ]]
+ (fn [todos [_ todo-id todo-param-key edit-param _response]]
    (assoc-in todos [todo-id todo-param-key] edit-param)))
