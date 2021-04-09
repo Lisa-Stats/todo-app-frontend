@@ -2,9 +2,10 @@
   (:require
    [ajax.core :as ajax]
    [day8.re-frame.http-fx]
-   [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx]]
-   [todo.db :refer [app-db todos->local-store]]))
-
+   [pushy.core :as p]
+   [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx reg-fx]]
+   [todo.db :refer [app-db todos->local-store]]
+   [todo.router :refer [routes]]))
 
 (def ->local-store (after todos->local-store))
 
@@ -24,8 +25,29 @@
  (fn [{:keys [db]} [_ {:keys [page]}]]
    (let [set-page (assoc db :active-page page)]
      (case page
-       :home {:db set-page}
-       :todos {:db set-page}))))
+       :home     {:db set-page}
+       :register {:db set-page}
+       :todo     {:db set-page}))))
+
+#_(reg-event-fx
+ :navigate
+ (fn [_cofx [_ & route]]
+   {:navigate! route}))
+
+#_(reg-fx
+ :navigate!
+ (fn [route]
+   (p/push-state! routes route)))
+
+#_(reg-event-fx
+ :go-to-todos
+ (fn [{:keys [db]} [_ credentials]]
+   (let [username (:username credentials)
+         uuid     (:password credentials)]
+     (if (= uuid "9ae26d66-e86d-48fd-a63d-4965fbac51b0")
+       {:db (assoc db :users [username uuid])
+        :navigate! [:todo]}
+       {:db (assoc-in db [:error :todos] "wrong password")}))))
 
 (defn- get-todos
   [url]
@@ -39,7 +61,8 @@
 (reg-event-fx
  :get-todos
  (fn [{:keys [_db]} _]
-   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8"]
+   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0
+"]
      {:http-xhrio (get-todos url)})))
 
 (defn map-todo-id [todo]
@@ -68,7 +91,7 @@
 (reg-event-fx
  :add-todo
  (fn [{:keys [_db]} [_ name body]]
-   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8"]
+   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0"]
      {:http-xhrio (add-todo url name body)})))
 
 (reg-event-db
@@ -90,7 +113,7 @@
 (reg-event-fx
  :delete-todo
  (fn [{:keys [_db]} [_ todo-id]]
-   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8/"]
+   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0/"]
      {:http-xhrio (delete-todo url todo-id)})))
 
 (reg-event-db
@@ -112,7 +135,7 @@
 (reg-event-fx
  :update-todo
  (fn [{:keys [_db]} [_ todo-id todo-param-key edit-param]]
-   (let [url "http://localhost:8890/todo/655aefdc-2b7b-4254-b288-41a1c3a9a4b8/"]
+   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0/"]
      {:http-xhrio (update-todo url todo-id todo-param-key edit-param)})))
 
 (reg-event-db
