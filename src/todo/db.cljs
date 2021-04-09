@@ -4,7 +4,7 @@
 
 (def app-db
   {:active-page :home
-   :button-info 0})
+   :users ""})
 
 (def ls-key "todos-reframe")
 
