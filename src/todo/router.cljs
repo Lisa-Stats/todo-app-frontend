@@ -5,13 +5,15 @@
    [re-frame.core :refer [dispatch]]))
 
 (def routes
-  ["/" {""      :home
-        "todos" :todos}])
+  ["/" {""         :home
+        "register" :register
+        "todo"     :todo}])
 
 (def history
   (let [dispatch #(dispatch [:set-active-page {:page (:handler %)}])
         match #(bidi/match-route routes %)]
     (pushy/pushy dispatch match)))
+
 (defn start!
   []
   (pushy/start! history))
