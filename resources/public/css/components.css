@@ -1,5 +1,5 @@
 .sidebar {
-    @apply h-full w-52 fixed inset-y-0 left-0;
+    @apply h-full w-52 fixed inset-y-0 left-0 mt-6;
 }
 
 .sbcat {
@@ -7,11 +7,11 @@
 }
 
 .main {
-    @apply ml-52 pl-8 mt-10;
+    @apply space-y-2 ml-52 pl-8 mt-24;
 }
 
 .mtitle {
-    @apply mb-6 ml-10 text-lg font-bold;
+    @apply mt-4 ml-60 text-xl font-semibold;
 }
 
 .firstrow {
@@ -20,4 +20,12 @@
 
 .tabletitle {
     @apply text-left px-8 py-4;
+}
+
+.sidebartwo {
+    @apply bg-gradient-to-b from-blue-500 to-blue-300;
+}
+
+.header {
+    @apply pt-6 ml-12 text-xl font-bold text-gray-50;
 }

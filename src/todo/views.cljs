@@ -159,17 +159,17 @@
                ^{:key id} [todo-items todo-info]))])))
 
 (defn todo-fns []
-  (let [add-name (r/atom "")
-        add-todo (r/atom "")]
+  (let [add-name     (r/atom "")
+        add-todo     (r/atom "")
+        add-category (r/atom "")]
     (fn []
-      [:<>
+      [:div {:class " shadow-md rounded-lg py-3 bg-blue-100 w-4/5 pl-2 flex ml-12 space-x-24 px-2"}
+       [:p {:class "text-lg font-medium item-center ml-2"}"Add todo
+here ------->"
+        [:div
+         [:button {:class "mt-4 bg-blue-200 px-16 py-4 rounded-md shadow-md"} "Click to add"]]]
        [:div
-        [:h2 "'Sign in' button: "
-         [:button {:class "px-1 py-1 bg-blue-100"
-                   :on-click #(dispatch [:get-todos])}
-          "Get todos"]]]
-       [:div
-        [:h3 "Add todo name"]
+        [:h3 "Add name"]
         [:input {:class "border-4 border-blue-100"
                  :type :text
                  :value @add-name
@@ -193,47 +193,55 @@
                      (reset! add-name "")
                      (reset! add-todo "")
                      (.preventDefault e)))}]]
-
        [:div
-        [:select {:class "bg-blue-100"}
+        [:h2 "Add category"]
+        [:select {:on-change #(reset! add-category (.. % -target -value))
+                  :class "bg-blue-50"}
          [:option
-           "Please choose a category"]
-         [:option
+          "Please choose a category"]
+         [:option {:value "Home"}
           "Home"]
-         [:option
-          "Family"]
-         [:option
+         [:option {:value "Friends"}
           "Friends"]
-         [:option
+         [:option {:value "Errands"}
           "Errands"]
-         [:option
-           "Other"]]]]))
+         [:option {:value "Other"}
+          "Other"]
+         [:option {:value "None"}
+          "None"]]
+        [:p @add-category]
+        ]]))
   )
 
 (defn todos-page
   []
   (fn []
     [:<>
-     [:div.sidebar {:class "bg-gradient-to-b from-blue-500 to-blue-300"}
-      [:h2 {:class "pt-6 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
+     [:div.sidebar.sidebartwo
+      [:h2.header "Todos Categories"]
       [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "All"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Home"]]
-       [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Family"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Friends"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Errands"]]
        [:div.sbcat [:a {:href "#", :class "hover:text-gray-900"} "Other"]]]]
      [:div.main
-      [:div [:h1.mtitle
-             "Here are your todos"]]
+      [:div {:class "h-10 fixed inset-x-0 top-0 bg-gradient-to-r from-blue-500 to-blue-300"}
+       [:div {:class "text-right pr-56"} "Click here to retrieve todos: "
+        [:button {:class "px-4 py-2 bg-blue-200"
+                  :on-click #(dispatch [:get-todos])}
+         "Enter"]]
+       [:div [:h1.mtitle
+              "Here are your todos"]]]
       [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed w-fixed"}
        [:div {:class "table-row"}
         [:div.tabletitle {:class "bg-blue-300 table-cell w-40 text-left rounded-tl-md"} "Completed"]
-        [:div.tabletitle {:class "bg-blue-300 table-cell w-64 text-center"} "Todo Name"]
-        [:div.tabletitle {:class "bg-blue-300 table-cell w-96 text-center rounded-tr-md"} "Todo"]]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-64 text-center"} "Name"]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-96 text-center"} "Todo"]
+        [:div.tabletitle {:class "bg-blue-300 table-cell w-96 text-center rounded-tr-md"} "Category"]]
        [todo-list]]
       [:footer {:class "text-xs ml-72"}
-       [:p "Click to update todo | | | Click X to delete todo"]]]
+       [:p "Click to update | | | Click X to delete"]]]
      [:div {:class "ml-52 pl-8 pt-8"}
       [todo-fns]]]))
 
