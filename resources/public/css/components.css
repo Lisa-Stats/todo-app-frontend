@@ -6,26 +6,10 @@
     @apply mb-3;
 }
 
-.main {
-    @apply space-y-2 ml-52 pl-8 mt-24;
-}
-
-.mtitle {
-    @apply mt-4 ml-60 text-xl font-semibold;
-}
-
 .firstrow {
     @apply table-row shadow-sm;
 }
 
 .tabletitle {
     @apply text-left px-8 py-4;
-}
-
-.sidebartwo {
-    @apply bg-gradient-to-b from-blue-500 to-blue-300;
-}
-
-.header {
-    @apply pt-6 ml-12 text-xl font-bold text-gray-50;
 }
