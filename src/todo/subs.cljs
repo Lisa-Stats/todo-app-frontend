@@ -16,3 +16,8 @@
  :current-todos
  (fn [db _]
    (:todos db)))
+
+(reg-sub
+ :current-category
+ (fn [db _]
+   (:category db)))
