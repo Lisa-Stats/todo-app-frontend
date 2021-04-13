@@ -29,26 +29,6 @@
        :register {:db set-page}
        :todo     {:db set-page}))))
 
-#_(reg-event-fx
- :navigate
- (fn [_cofx [_ & route]]
-   {:navigate! route}))
-
-#_(reg-fx
- :navigate!
- (fn [route]
-   (p/push-state! routes route)))
-
-#_(reg-event-fx
- :go-to-todos
- (fn [{:keys [db]} [_ credentials]]
-   (let [username (:username credentials)
-         uuid     (:password credentials)]
-     (if (= uuid "9ae26d66-e86d-48fd-a63d-4965fbac51b0")
-       {:db (assoc db :users [username uuid])
-        :navigate! [:todo]}
-       {:db (assoc-in db [:error :todos] "wrong password")}))))
-
 (defn- get-todos
   [url]
   {:method          :get
@@ -79,10 +59,10 @@
    (assoc-in db [:error :todos] response)))
 
 (defn- add-todo
-  [url name body]
+  [url name body category]
   {:method          :post
    :uri             url
-   :params          {:todo-name name :todo-body body}
+   :params          {:todo-name name :todo-body body :todo-category category}
    :format          (ajax/json-request-format)
    :response-format (ajax/json-response-format {:keywords? true})
    :on-success      [:add-todo-to-app-db]
@@ -90,9 +70,9 @@
 
 (reg-event-fx
  :add-todo
- (fn [{:keys [_db]} [_ name body]]
+ (fn [{:keys [_db]} [_ name body category]]
    (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0"]
-     {:http-xhrio (add-todo url name body)})))
+     {:http-xhrio (add-todo url name body category)})))
 
 (reg-event-db
  :add-todo-to-app-db
@@ -100,6 +80,11 @@
  (fn [todos [_ response]]
    (let [id (:todo/todo_id response)]
      (assoc todos id response))))
+
+(reg-event-db
+ :update-category
+ (fn [db [_ todo-cat]]
+   (assoc db :category todo-cat)))
 
 (defn- delete-todo
   [url todo-id]
