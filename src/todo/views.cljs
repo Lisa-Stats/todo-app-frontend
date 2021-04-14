@@ -151,17 +151,17 @@
                      :on-click #(dispatch [:delete-todo id])} "x"]]
           [update-component todo-info :todo/todo_name edited-name name-editing?]
           [update-component todo-info :todo/todo_body edited-body body-editing?]
-          [:div {:class "text-left ml-2 table-cell px-2 py-2 border-b-2 border-blue-100"}(:todo/todo_category todo-info) ]]]))))
+          [:div {:class "text-left ml-2 table-cell px-2 py-2 border-b-2 border-blue-100"} (:todo/todo_category todo-info)]]]))))
 
 (defn todo-list [todos]
   (fn [ _todos]
-    [:div {:class "table-row-group"}
+    [:div {:class "table-row-group bg-lblue-300"}
      (for [[id todo-info] todos]
        ^{:key id} [todo-items todo-info])]))
 
 (defn todo-list-category [category todos]
   (fn [_category _todos]
-    [:div {:class "table-row-group"}
+    [:div {:class "table-row-group bg-lblue-300"}
      (for [[id todo-info] todos
            :when (= (:todo/todo_category todo-info) category)]
        ^{:key id} [todo-items todo-info])]))
@@ -171,7 +171,7 @@
         add-todo     (r/atom "")
         add-category (r/atom "")]
     (fn []
-      [:div {:class " shadow-md rounded-lg py-3 bg-blue-100 w-4/5 pl-2 flex ml-12 space-x-24 px-2"}
+      [:div {:class " shadow-md rounded-lg py-3 bg-gradient-to-r from-lblue-300 to-purple-500 w-4/5 pl-2 flex ml-12 space-x-24 px-2"}
        [:div {:class "text-lg font-medium item-center ml-2"}"Add todo here ------->"
         [:div
          (if (or (str/blank? @add-name) (str/blank? @add-todo))
@@ -180,7 +180,7 @@
                                     (reset! add-name     "")
                                     (reset! add-todo     "")
                                     (.preventDefault %))
-                     :class "mt-4 bg-blue-200 px-16 py-4 rounded-md shadow-md"} "Click to add"])]]
+                     :class "mt-4 bg-indigo-500 px-16 py-4 rounded-md shadow-md"} "Click to add"])]]
        [:div
         [:h3 "Add name (Required)"]
         [:input {:class "border-4 border-blue-100"
@@ -197,7 +197,7 @@
        [:div
         [:h2 "Add category"]
         [:select {:on-change #(reset! add-category (.. % -target -value))
-                  :class "bg-blue-50"}
+                  :class "bg-blue-100"}
          [:option {:value ""}
           "Please choose a category"]
          [:option {:value "Home"}
@@ -209,17 +209,15 @@
          [:option {:value "Other"}
           "Other"]
          [:option {:value "None"}
-          "None"]]
-        [:p @add-category]
-        ]])))
+          "None"]]]])))
 
 (defn todos-page []
   (let [category (subscribe [:current-category])
         todos    (subscribe [:current-todos])]
     (fn []
       [:<>
-       [:div.sidebar {:class "bg-gradient-to-b from-blue-500 to-blue-300"}
-        [:h2 {:class "pt-10 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
+       [:div.sidebar {:class "bg-gradient-to-b from-indigo-500 to-lblue-300"}
+        [:h2 {:class "pt-5 ml-12 text-xl font-bold text-gray-50"} "Todos Categories"]
         [:div {:class "pt-4 ml-20 text-lg font-small block text-gray-50"}
          [:div.sbcat [:div {:on-click #(dispatch [:update-category "All"]) :class "cursor-pointer hover:text-gray-900"} "All"]]
          [:div.sbcat [:div {:on-click #(dispatch [:update-category "Home"]) :class "cursor-pointer hover:text-gray-900"} "Home"]]
@@ -227,19 +225,19 @@
          [:div.sbcat [:div {:on-click #(dispatch [:update-category "Errands"]) :class "cursor-pointer hover:text-gray-900"} "Errands"]]
          [:div.sbcat [:div {:on-click #(dispatch [:update-category "Other"]) :class "cursor-pointer hover:text-gray-900"} "Other"]]]]
        [:div {:class "space-y-2 ml-52 pl-8 mt-24"}
-        [:div {:class "h-10 fixed inset-x-0 top-0 bg-gradient-to-r from-blue-500 to-blue-300"}
+        [:div {:class "h-10 fixed inset-x-0 top-0 bg-gradient-to-r from-indigo-500 to-lblue-300"}
          [:div {:class "text-right pr-56"} "Click here to retrieve todos: "
           [:button {:class "px-4 py-2 bg-blue-200"
                     :on-click #(dispatch [:get-todos])}
            "Enter"]]
-         [:div [:h1 {:class " mt-4 ml-60 text-xl font-semibold"}
+         [:div [:h1 {:class "mt-4 ml-60 text-xl font-semibold"}
                 "Here are your todos"]]]
         [:div {:class "rounded-md shadow-md overflow-y-auto mx-6 w-100 table table-fixed w-fixed"}
          [:div {:class "table-row"}
-          [:div.tabletitle {:class "bg-blue-300 table-cell w-40 text-left rounded-tl-md"} "Completed"]
-          [:div.tabletitle {:class "bg-blue-300 table-cell w-64 text-center"} "Name"]
-          [:div.tabletitle {:class "bg-blue-300 table-cell w-96 text-center"} "Todo"]
-          [:div.tabletitle {:class "bg-blue-300 table-cell w-36 text-center rounded-tr-md"} "Category"]]
+          [:div.tabletitle {:class "bg-purple-500 table-cell w-40 text-left rounded-tl-md"} "Completed"]
+          [:div.tabletitle {:class "bg-purple-500 table-cell w-64 text-center"} "Name"]
+          [:div.tabletitle {:class "bg-purple-500 table-cell w-96 text-center"} "Todo"]
+          [:div.tabletitle {:class "bg-purple-500 table-cell w-36 text-center rounded-tr-md"} "Category"]]
          (if (= @category "All")
            [todo-list @todos]
            [todo-list-category @category @todos])]
