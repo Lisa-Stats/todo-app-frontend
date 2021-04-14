@@ -8,7 +8,10 @@ module.exports = {
         bgray: colors.blueGray,
         cgray: colors.coolGray,
         gray: colors.gray,
-        blue: colors.blue
+        blue: colors.blue,
+        indigo: colors.indigo,
+        lblue: colors.lightBlue,
+        purple: colors.purple
       }
      },
 variants: {},
