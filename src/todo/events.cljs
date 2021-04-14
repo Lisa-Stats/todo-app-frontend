@@ -2,7 +2,6 @@
   (:require
    [ajax.core :as ajax]
    [day8.re-frame.http-fx]
-   [pushy.core :as p]
    [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx reg-fx]]
    [todo.db :refer [app-db todos->local-store]]
    [todo.router :refer [routes]]))
