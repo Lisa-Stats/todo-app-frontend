@@ -21,3 +21,15 @@
  :current-category
  (fn [db _]
    (:category db)))
+
+(reg-sub
+ :total-todos
+ :<- [:current-todos]
+ (fn [todos _]
+   (count todos)))
+
+(reg-sub
+ :completed
+ :<- [:current-todos]
+ (fn [todos _]
+   (count (filter :done (vals todos)))))
