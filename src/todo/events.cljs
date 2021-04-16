@@ -3,8 +3,7 @@
    [ajax.core :as ajax]
    [day8.re-frame.http-fx]
    [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx reg-fx]]
-   [todo.db :refer [app-db todos->local-store]]
-   [todo.router :refer [routes]]))
+   [todo.db :refer [app-db todos->local-store]]))
 
 (def ->local-store (after todos->local-store))
 
@@ -126,3 +125,9 @@
  todo-interceptors
  (fn [todos [_ todo-id todo-param-key edit-param _response]]
    (assoc-in todos [todo-id todo-param-key] edit-param)))
+
+(reg-event-db
+ :toggle-done
+ path-interceptor
+ (fn [todos [_ todo-id]]
+   (update-in todos [todo-id :done] not)))
