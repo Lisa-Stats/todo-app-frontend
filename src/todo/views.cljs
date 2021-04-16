@@ -28,7 +28,7 @@
 
 (defn form-component []
   (let [credentials (r/atom {:username ""
-                             :password "9ae26d66-e86d-48fd-a63d-4965fbac51b0"})]
+                             :password ""})]
     (fn []
       [:div {:class "space-y-6"}
        [:div {:class "shadow-md"}
@@ -53,7 +53,7 @@
          [:input {:id "remember_me"
                   :name "remember_me"
                   :type "checkbox"
-                  :class "h-4 w-4 text-blue-600"}]
+                  :class "h-4 w-4"}]
          [:label {:for "remember_me"
                   :class "ml-2 text-sm font-medium text-purple-700"} "Remember me"]]
         [:div
@@ -114,13 +114,14 @@
       (let [id (:todo/todo_id todo-info)]
         [:<>
          [:div  {:class "table-row"}
-          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell pl-14"} [:input {:type :checkbox}]
+          [:div {:class "border-l-2 border-b-2 border-r-2 border-blue-100 table-cell pl-14"}
+           [:input {:type :checkbox
+                    :on-change #(dispatch [:toggle-done id])}]
            [:button {:class "bg-blue-50 ml-8 px-1 hover:bg-indigo-500 table-cell"
                      :on-click #(dispatch [:delete-todo id])} "x"]]
           [update-component todo-info :todo/todo_name edited-name name-editing?]
           [update-component todo-info :todo/todo_body edited-body body-editing?]
-          [update-component todo-info :todo/todo_category edited-cat cat-editing?]
-          #_[:div {:class "text-left ml-2 table-cell px-2 py-2 border-b-2 border-blue-100"} (:todo/todo_category todo-info)]]]))))
+          [update-component todo-info :todo/todo_category edited-cat cat-editing?]]]))))
 
 (defn todo-list [todos]
   (fn [ _todos]
@@ -202,8 +203,10 @@
           "None"]]]])))
 
 (defn todos-page []
-  (let [category (subscribe [:current-category])
-        todos    (subscribe [:current-todos])]
+  (let [category    (subscribe [:current-category])
+        todos       (subscribe [:current-todos])
+        total-todos (subscribe [:total-todos])
+        completed   (subscribe [:completed])]
     (fn []
       [:<>
        [:div.sidebar {:class "bg-gradient-to-b from-purple-500 to-lblue-300"}
@@ -233,12 +236,12 @@
            "Friends" [todo-list-category-friends @category @todos]
            "Errands" [todo-list-category-errands @category @todos]
            "Other"   [todo-list-category-others @category @todos]
-           [todo-list @todos])
-         #_(if (= @category "All")
-           [todo-list @todos]
-           [todo-list-category @category @todos])]
-        [:footer {:class "text-xs ml-72"}
-         [:p "Click to update | | | Click X to delete"]]]
+           [todo-list @todos])]
+        [:div {:class "text-xs ml-8 flex"}
+         [:div {:class "flex"}
+          @completed " / "@total-todos " total todos completed"
+          [:div {:class "pl-60"}
+           "Click to update | | | Click X to delete"]]]]
        [:div {:class "ml-52 pl-8 pt-8"}
         [todo-fns]]])))
 
