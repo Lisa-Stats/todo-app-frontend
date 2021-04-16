@@ -6,7 +6,6 @@
 
 (def routes
   ["/" {""         :home
-        "register" :register
         "todo"     :todo}])
 
 (def history
