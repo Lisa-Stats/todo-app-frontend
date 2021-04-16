@@ -25,7 +25,6 @@
    (let [set-page (assoc db :active-page page)]
      (case page
        :home     {:db set-page}
-       :register {:db set-page}
        :todo     {:db set-page}))))
 
 (defn- get-todos
