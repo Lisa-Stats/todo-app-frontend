@@ -10,7 +10,7 @@
   (fn [credentials]
     (let [username (:username @credentials)
           uuid     (:password @credentials)]
-      (if (and (= uuid "9ae26d66-e86d-48fd-a63d-4965fbac51b0")
+      (if (and (= uuid "1629b4fa-11a1-412d-b298-d88a43f8bb83")
                (= username "lisa"))
         [:a {:href (url-for :todo)}
          [:button {:class "group relative w-full flex justify-center py-2 text-sm font-mediu rounded-md text-gray-50 bg-gradient-to-r from-indigo-500 to-lblue-300 hover:from-indigo-600 hover:to-lblue-400"}
