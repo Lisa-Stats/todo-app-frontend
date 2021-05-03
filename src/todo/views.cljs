@@ -123,39 +123,21 @@
           [update-component todo-info :todo/todo_body edited-body body-editing?]
           [update-component todo-info :todo/todo_category edited-cat cat-editing?]]]))))
 
-(defn todo-list [todos]
-  (fn [ _todos]
+(defn todo-list
+  [_todos]
+  (fn [todos]
     [:div {:class "table-row-group bg-lblue-300"}
-     (for [[id todo-info] todos]
+     (for [[id todo-info] @todos]
        ^{:key id} [todo-items todo-info])]))
 
-(defn todo-list-category-home [_category todos]
-  (fn [_category _todos]
+(defn todo-list-category
+  [_category _todos]
+  (fn [category todos]
     [:div {:class "table-row-group bg-lblue-300"}
-     (for [[id todo-info] todos
-           :when (= (:todo/todo_category todo-info) "Home")]
-       ^{:key id} [todo-items todo-info])]))
-
-(defn todo-list-category-friends [_category todos]
-  (fn [_category _todos]
-    [:div {:class "table-row-group bg-lblue-300"}
-     (for [[id todo-info] todos
-           :when (= (:todo/todo_category todo-info) "Friends")]
-       ^{:key id} [todo-items todo-info])]))
-
-(defn todo-list-category-errands [_category todos]
-  (fn [_category _todos]
-    [:div {:class "table-row-group bg-lblue-300"}
-     (for [[id todo-info] todos
-           :when (= (:todo/todo_category todo-info) "Errands")]
-       ^{:key id} [todo-items todo-info])]))
-
-(defn todo-list-category-others [_category todos]
-  (fn [_category _todos]
-    [:div {:class "table-row-group bg-lblue-300"}
-     (for [[id todo-info] todos
-           :when (= (:todo/todo_category todo-info) "Other")]
-       ^{:key id} [todo-items todo-info])]))
+     (doall
+      (for [[id todo-info] @todos
+            :when (= (:todo/todo_category todo-info) @category)]
+        ^{:key id} [todo-items todo-info]))]))
 
 (defn todo-fns []
   (let [add-name     (r/atom "")
@@ -166,7 +148,7 @@
        [:div {:class "text-lg font-medium item-center ml-2"}"Add todo here ------->"
         [:div
          (if (or (str/blank? @add-name) (str/blank? @add-todo))
-           [:button {:class " cursor-not-allowed mt-4 bg-blue-200 px-16 py-4 rounded-md shadow-md"} "Click to add"]
+           [:button {:class "cursor-not-allowed mt-4 bg-blue-200 px-16 py-4 rounded-md shadow-md"} "Click to add"]
            [:button {:on-click #(do (dispatch [:add-todo @add-name @add-todo @add-category])
                                     (reset! add-name     "")
                                     (reset! add-todo     "")
@@ -203,8 +185,8 @@
           "None"]]]])))
 
 (defn todos-page []
-  (let [category    (subscribe [:current-category])
-        todos       (subscribe [:current-todos])
+  (let [todos       (subscribe [:current-todos])
+        category    (subscribe [:current-category])
         total-todos (subscribe [:total-todos])
         completed   (subscribe [:completed])]
     (fn []
@@ -231,12 +213,9 @@
           [:div.tabletitle {:class "bg-indigo-500 table-cell w-64 text-center"} "Name"]
           [:div.tabletitle {:class "bg-indigo-500 table-cell w-96 text-center"} "Todo"]
           [:div.tabletitle {:class "bg-indigo-500 table-cell w-36 text-center rounded-tr-md"} "Category"]]
-         (case @category
-           "Home"    [todo-list-category-home @category @todos]
-           "Friends" [todo-list-category-friends @category @todos]
-           "Errands" [todo-list-category-errands @category @todos]
-           "Other"   [todo-list-category-others @category @todos]
-           [todo-list @todos])]
+         (if (= @category "All")
+           [todo-list todos]
+           [todo-list-category category todos])]
         [:div {:class "text-xs ml-8 flex"}
          [:div {:class "flex"}
           @completed " / "@total-todos " total todos completed"
