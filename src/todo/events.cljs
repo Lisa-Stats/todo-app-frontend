@@ -2,7 +2,7 @@
   (:require
    [ajax.core :as ajax]
    [day8.re-frame.http-fx]
-   [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx reg-fx]]
+   [re-frame.core :refer [after inject-cofx path reg-event-db reg-event-fx]]
    [todo.db :refer [app-db todos->local-store]]))
 
 (def ->local-store (after todos->local-store))
@@ -38,7 +38,7 @@
 (reg-event-fx
  :get-todos
  (fn [{:keys [_db]} _]
-   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0
+   (let [url "http://localhost:8890/todo/86427671-df71-4278-9b7a-dfd587416611
 "]
      {:http-xhrio (get-todos url)})))
 
@@ -68,7 +68,7 @@
 (reg-event-fx
  :add-todo
  (fn [{:keys [_db]} [_ name body category]]
-   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0"]
+   (let [url "http://localhost:8890/todo/86427671-df71-4278-9b7a-dfd587416611"]
      {:http-xhrio (add-todo url name body category)})))
 
 (reg-event-db
@@ -95,7 +95,7 @@
 (reg-event-fx
  :delete-todo
  (fn [{:keys [_db]} [_ todo-id]]
-   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0/"]
+   (let [url "http://localhost:8890/todo/86427671-df71-4278-9b7a-dfd587416611/"]
      {:http-xhrio (delete-todo url todo-id)})))
 
 (reg-event-db
@@ -117,7 +117,7 @@
 (reg-event-fx
  :update-todo
  (fn [{:keys [_db]} [_ todo-id todo-param-key edit-param]]
-   (let [url "http://localhost:8890/todo/9ae26d66-e86d-48fd-a63d-4965fbac51b0/"]
+   (let [url "http://localhost:8890/todo/86427671-df71-4278-9b7a-dfd587416611/"]
      {:http-xhrio (update-todo url todo-id todo-param-key edit-param)})))
 
 (reg-event-db
